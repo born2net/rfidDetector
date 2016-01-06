@@ -1,0 +1,25 @@
+
+RASPI-~->java -jar rfid-movement-detection-0.1-SNAPSHOT.jar 
+2015-10-28 23:08:59.878 [main]  INFO  rfid.utils.RFIDUtils - Load config file...
+2015-10-28 23:08:59.893 [main]  INFO  rfid.utils.RFIDUtils - modulePort: tmr:///COM3
+2015-10-28 23:08:59.896 [main]  INFO  rfid.utils.RFIDUtils - read_power: 3000
+2015-10-28 23:08:59.898 [main]  INFO  rfid.utils.RFIDUtils - measurement_error: 5
+2015-10-28 23:08:59.900 [main]  INFO  rfid.utils.RFIDUtils - sleeping_time: 50
+2015-10-28 23:08:59.901 [main]  INFO  rfid.utils.RFIDUtils - scanning_time: 150
+2015-10-28 23:08:59.903 [main]  INFO  rfid.utils.RFIDUtils - iteration_number: 10
+2015-10-28 23:08:59.907 [main]  INFO  rfid.utils.RFIDUtils - Create rfid reader (tmr:///COM3)
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at com.thingmagic.SerialTransportNative$Factory.createReader(SerialTransportNative.java:247)
+	at com.thingmagic.SerialTransportNative$Factory.createReader(SerialTransportNative.java:232)
+	at com.thingmagic.Reader.create(Reader.java:270)
+	at rfid.utils.RFIDUtils.createReader(RFIDUtils.java:17)
+	at rfid.Main.main(Main.java:18)
+Caused by: java.lang.RuntimeException: libname: linux-arm.lib not found
+	at com.thingmagic.SerialTransportNative.load(SerialTransportNative.java:113)
+	at com.thingmagic.SerialTransportNative.<clinit>(SerialTransportNative.java:68)
+	... 5 more
+RASPI-~->
+RASPI-~->
+RASPI-~->
+
+
