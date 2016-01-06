@@ -55,7 +55,6 @@ channel.throttleTime(5).map(data=> {
     database[tag].totalSeen = database[tag].totalSeen + 1;
     //console.log(database)
     return data;
-
 }).subscribe(e=> {
     //console.log(database);
 });
