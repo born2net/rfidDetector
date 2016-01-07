@@ -24,7 +24,8 @@ for (var i in tags) {
         id: tag,
         totalSeen: 0,
         newDistance: 0,
-        oldDistance: 0
+        oldDistance: 0,
+        lastSeen: null
     }
 }
 
@@ -41,6 +42,7 @@ var source1 = Rx.Observable.create(function (observer) {
             distance: match[1] * -1,
             tag: match[3],
             count: match[4]
+
         };
         observer.next(data);
     });
@@ -67,6 +69,8 @@ var source1 = Rx.Observable.create(function (observer) {
     database[tag].oldDistance = database[tag].newDistance;
     database[tag].newDistance = data.distance;
     database[tag].totalSeen = database[tag].totalSeen + 1;
+    database[tag].lastSeen = new Date();
+
     return database[tag];
 });
 
