@@ -6,10 +6,17 @@
 var exec = require('child_process').exec;
 var Rx = require('rxjs');
 
-var child = exec('java -jar rfid-movement-detection-0.1-SNAPSHOT.jar');
+
+Tail = require('tail').Tail;
+
+tail = new Tail("txt");
+
+
+//var child = exec('java -jar rfid-movement-detection-0.1-SNAPSHOT.jar');
+
 
 var database = {};
-var minDistanceMoved = 14;
+var minDistanceMoved = 8;
 var inputLiveTags;
 
 var tags = [
@@ -31,7 +38,7 @@ for (var i in tags) {
 
 var source1 = Rx.Observable.create(function (observer) {
 
-    child.stdout.on('data', function (stdout) {
+    tail.on("line", function (stdout) {
         var re = 'rssi\ (.*)(, epc)(.*), count\ ([0-9A-Za-z]+)';
         var match = stdout.match(new RegExp(re));
 
@@ -47,13 +54,34 @@ var source1 = Rx.Observable.create(function (observer) {
         observer.next(data);
     });
 
-    child.stderr.on('data', function (data) {
-        //console.log('stdout: ' + data);
+    tail.on("error", function (error) {
+        console.log('ERROR: ', error);
     });
 
-    child.on('close', function (code) {
-        //console.log('closing code: ' + code);
-    });
+
+    //child.stdout.on('data', function (stdout) {
+    //    var re = 'rssi\ (.*)(, epc)(.*), count\ ([0-9A-Za-z]+)';
+    //    var match = stdout.match(new RegExp(re));
+    //
+    //    if (match == null)
+    //        return;
+    //
+    //    var data = {
+    //        distance: match[1] * -1,
+    //        tag: match[3],
+    //        count: match[4]
+    //
+    //    };
+    //    observer.next(data);
+    //});
+    //
+    //child.stderr.on('data', function (data) {
+    //    //console.log('stdout: ' + data);
+    //});
+    //
+    //child.on('close', function (code) {
+    //    //console.log('closing code: ' + code);
+    //});
 
 
 }).throttleTime(250).map(data=> {
@@ -72,6 +100,8 @@ var source1 = Rx.Observable.create(function (observer) {
     database[tag].lastSeen = new Date();
 
     return database[tag];
+}).filter(e => {
+    return e != null;
 });
 
 var source2 = Rx.Observable.interval(1000).map(e=> {
@@ -88,7 +118,14 @@ var source2 = Rx.Observable.interval(1000).map(e=> {
 var final = Rx.Observable.merge(source1, source2).distinctUntilChanged();
 final.subscribe(
     function (x) {
-        console.log(`'data ${JSON.stringify(x)}`);
+
+        var newDistance = Math.abs(x.newDistance);
+        var oldDistance = Math.abs(x.oldDistance);
+        var moved = Math.abs(newDistance - oldDistance)
+        console.log(`'data ${JSON.stringify(x)} ${moved}`);
+        if (moved > minDistanceMoved) {
+            console.log('Moved XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+        }
     },
     function (err) {
         console.log('Error: ' + err);
